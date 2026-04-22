@@ -45,14 +45,33 @@ public_users.get('/', async function (req, res) {
   }
 });
 
-public_users.get('/isbn/:isbn', function (req, res) {
-    const isbn = req.params.isbn;
-    if (books[isbn]) {
-      return res.status(200).send(JSON.stringify(books[isbn], null, 4));
-    } else {
-      return res.status(404).json({ message: "Book not found" });
-    }
-  });
+
+public_users.get('/isbn/:isbn', async function (req, res) {
+  const isbn = req.params.isbn;
+
+  try {
+    const fetchBookByISBN = (isbn) => {
+      return new Promise((resolve, reject) => {
+        const book = books[isbn];
+        if (book) {
+          resolve(book);
+        } else {
+          reject({ status: 404, message: "Book not found" });
+        }
+      });
+    };
+
+    // Await the promise resolution
+    const bookDetails = await fetchBookByISBN(isbn);
+    return res.status(200).json(bookDetails);
+
+  } catch (error) {
+    // Handle cases where the book is not found or other errors
+    return res.status(error.status || 500).json({ 
+      message: error.message || "Error fetching book details" 
+    });
+  }
+});
   
 
 public_users.get('/author/:author', function (req, res) {
