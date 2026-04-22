@@ -24,9 +24,12 @@ public_users.post("/register", (req,res) => {
 
 
 
+const axios = require('axios');
+
+// Get the book list available in the shop using Async-Await
 public_users.get('/', async function (req, res) {
   try {
-    
+    // Simulating an asynchronous fetch of the books database
     const getBooks = () => {
         return new Promise((resolve, reject) => {
             if (books) {
@@ -46,10 +49,12 @@ public_users.get('/', async function (req, res) {
 });
 
 
+// Task 11: Get book details based on ISBN using Async-Await
 public_users.get('/isbn/:isbn', async function (req, res) {
   const isbn = req.params.isbn;
 
   try {
+    // Create a promise to simulate an asynchronous database lookup
     const fetchBookByISBN = (isbn) => {
       return new Promise((resolve, reject) => {
         const book = books[isbn];
@@ -73,13 +78,14 @@ public_users.get('/isbn/:isbn', async function (req, res) {
   }
 });
   
+  
 
 // Task 12: Get book details based on Author using Async-Await
 public_users.get('/author/:author', async function (req, res) {
   const author = req.params.author;
 
   try {
-
+    // 1. Create a promise to simulate an asynchronous database search
     const fetchBooksByAuthor = (authorName) => {
       return new Promise((resolve, reject) => {
         const bookEntries = Object.values(books);
@@ -93,14 +99,14 @@ public_users.get('/author/:author', async function (req, res) {
       });
     };
 
-
+    // 2. Await the result of the search
     const authorBooks = await fetchBooksByAuthor(author);
     
-
+    // 3. Return the filtered list
     return res.status(200).json(authorBooks);
 
   } catch (error) {
-   
+    // Handle cases where no books match or server errors occur
     return res.status(error.status || 500).json({ 
       message: error.message || "Error fetching books by author" 
     });
@@ -137,7 +143,6 @@ public_users.get('/title/:title', async function (req, res) {
     });
   }
 });
-
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   let isbn=req.params.isbn;
