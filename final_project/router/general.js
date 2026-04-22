@@ -106,16 +106,36 @@ public_users.get('/author/:author', async function (req, res) {
     });
   }
 });
-public_users.get('/title/:title',function (req, res) {
-    const title = req.params.title;
-    const allBooks = Object.values(books); // Convert books object to an array
-    const filteredBooks = allBooks.filter(book => book.title === title);
-  
-    if (filteredBooks.length > 0) {
-      return res.status(200).send(JSON.stringify(filteredBooks, null, 4));
-    } else {
-      return res.status(404).json({ message: "No books found with this title" });
-    }
+// Task 13: Get book details based on Title using Async-Await
+public_users.get('/title/:title', async function (req, res) {
+  const title = req.params.title;
+
+  try {
+    // 1. Create a promise to simulate an asynchronous search
+    const fetchBooksByTitle = (bookTitle) => {
+      return new Promise((resolve, reject) => {
+        const bookEntries = Object.values(books);
+        const filteredBooks = bookEntries.filter(book => book.title === bookTitle);
+
+        if (filteredBooks.length > 0) {
+          resolve(filteredBooks);
+        } else {
+          reject({ status: 404, message: "No books found with this title" });
+        }
+      });
+    };
+
+    // 2. Await the search results
+    const titleBooks = await fetchBooksByTitle(title);
+    
+    // 3. Send the response
+    return res.status(200).json(titleBooks);
+
+  } catch (error) {
+    return res.status(error.status || 500).json({ 
+      message: error.message || "Error fetching books by title" 
+    });
+  }
 });
 
 //  Get book review
